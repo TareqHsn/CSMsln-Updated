@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CSM-Bangladesh</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CSM.styles.css" asp-append-version="true" />
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            transition: all 0.3s;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background-color: #343a40;
+            color: white;
+        }
+
+        .sidebar-nav {
+            padding: 0;
+            list-style: none;
+        }
+
+            .sidebar-nav .nav-item {
+                width: 100%;
+            }
+
+            .sidebar-nav .nav-link {
+                padding: 12px 20px;
+                color: #333;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+                .sidebar-nav .nav-link:hover {
+                    background-color: #e9ecef;
+                    color: #007bff;
+                }
+
+                .sidebar-nav .nav-link.active {
+                    background-color: #007bff;
+                    color: white;
+                }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .navbar-toggler {
+            display: none;
+        }
+
+        @@media (max-width: 768px) {
+            .sidebar {
+                margin-left: -250px;
+                position: fixed;
+                z-index: 1000;
+            }
+
+                .sidebar.active {
+                    margin-left: 0;
+                }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .navbar-toggler {
+                display: block;
+                position: fixed;
+                right: 20px;
+                top: 10px;
+                z-index: 1100;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h4>CSM-Bangladesh</h4>
+        </div>
+        <ul class="sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Tasks" asp-action="List">Task</a>
+            </li>
+
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Mobile Toggle Button -->
+        <button class="navbar-toggler" type="button" id="sidebarToggle">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Page Content -->
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+
+        <footer class="border-top footer text-muted">
+            <div class="container">
+                &copy; 2023 - CSM-Bangladesh
+            </div>
+        </footer>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Toggle sidebar on mobile
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

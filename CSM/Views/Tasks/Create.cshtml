@@ -1,0 +1,142 @@
+﻿@model CSM.Core.Entities.Tasks
+
+@{
+    ViewData["Title"] = "Create Task";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <h2 class="h5 mb-0"><i class="fas fa-tasks me-2"></i>Add New Task</h2>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+
+                        <!-- Title (full width) -->
+                        <div class="form-group mb-4">
+                            <label asp-for="Title" class="form-label fw-semibold">Title<span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control form-control-lg" placeholder="What needs to be done?" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Description (full width) -->
+                        <div class="form-group mb-4">
+                            <label asp-for="Description" class="form-label fw-semibold"></label>
+                            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Add details about the task..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Side-by-side fields -->
+                        <div class="row g-3 mb-4">
+                            <!-- Due Date -->
+                            <div class="col-md-6">
+                                <label asp-for="DueDate" class="form-label fw-semibold"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                    <input type="datetime-local" asp-for="DueDate" class="form-control" />
+                                </div>
+                                <span asp-validation-for="DueDate" class="text-danger small"></span>
+                            </div>
+
+                            <!-- User Assignment -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Assign To</label>
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" id="everyoneCheckbox" name="everyoneCheckbox" value="true" />
+                                    <label class="form-check-label" for="everyoneCheckbox">Everyone</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" id="customCheckbox" name="customCheckbox" value="true" />
+                                    <label class="form-check-label" for="customCheckbox">Custom</label>
+                                </div>
+                                <div id="userSelectGroup" class="input-group mt-2" style="display: none;">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <select asp-for="UserId" class="form-control" asp-items="@(new SelectList(ViewBag.Users, "Id", "UserName"))">
+                                        <option value="">Select a user</option>
+                                    </select>
+                                </div>
+                                <span asp-validation-for="UserId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Completed checkbox -->
+                        <div class="form-group form-check form-switch mb-4">
+                            <input class="form-check-input" type="checkbox" role="switch" asp-for="IsCompleted" />
+                            <label class="form-check-label fw-semibold" asp-for="IsCompleted"></label>
+                        </div>
+
+                        <!-- Form actions -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a asp-action="List" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-save me-2"></i>Create Task
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .card {
+        border: none;
+        border-radius: 0.5rem;
+    }
+
+    .form-switch .form-check-input {
+        width: 2.5em;
+        height: 1.5em;
+    }
+
+    #userSelectGroup {
+        transition: all 0.3s ease;
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#everyoneCheckbox, #customCheckbox').change(function () {
+                var everyoneChecked = $('#everyoneCheckbox').is(':checked');
+                var customChecked = $('#customCheckbox').is(':checked');
+
+                if (everyoneChecked && customChecked) {
+                    $('#customCheckbox').prop('checked', false);
+                    $('#userSelectGroup').hide();
+                } else if (everyoneChecked) {
+                    $('#userSelectGroup').hide();
+                    $('#UserId').val('');
+                } else if (customChecked) {
+                    $('#userSelectGroup').show();
+                } else {
+                    $('#userSelectGroup').hide();
+                    $('#UserId').val('');
+                }
+            });
+
+            if ($('#everyoneCheckbox').is(':checked')) {
+                $('#userSelectGroup').hide();
+            } else if ($('#customCheckbox').is(':checked')) {
+                $('#userSelectGroup').show();
+            }
+        });
+    </script>
+}
