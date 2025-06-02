@@ -1,5 +1,6 @@
-﻿using CSM.Core.Interfaces;
-using CSM.Core.UseCases.Commands;
+﻿using CSM.Core.Entities;
+using CSM.Core.Interfaces.ITasks;
+using CSM.Core.UseCases.Commands.TasksCommands;
 
 namespace CSM.Application.Services.TaskServices
 {
@@ -24,7 +25,7 @@ namespace CSM.Application.Services.TaskServices
 
         public async Task<int> UpdateTaskStatus(UpdateTaskStatusCommand command)
         {
-            return await _commandRepository.UpdateTaskStatusById(new Core.Entities.Tasks { Id = command.Id, IsCompleted = command.IsCompleted });
+            return await _commandRepository.UpdateTaskStatusById(new Tasks { Id = command.TaskId, IsCompleted = command.IsCompleted });
         }
 
         public async Task<int> SoftDeleteTask(SoftDeleteTaskCommand command)

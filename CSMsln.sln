@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSM", "CSM\CSM.csproj", "{D3D26FCC-7AF0-4A93-A703-CFA6FF8C5A93}"
 EndProject
@@ -10,8 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSM.Application", "CSM.Application\CSM.Application.csproj", "{F01F12F9-D1C6-4910-83DA-96F826CF3E01}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSM.Infrastructure", "CSM.Infrastructure\CSM.Infrastructure.csproj", "{183DAB05-5780-4642-AEB6-F155D4F1101D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSM.Presentation", "CSM.Presentation\CSM.Presentation.csproj", "{0A24353A-0432-4893-A458-1F5746E60B77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +33,6 @@ Global
 		{183DAB05-5780-4642-AEB6-F155D4F1101D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{183DAB05-5780-4642-AEB6-F155D4F1101D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{183DAB05-5780-4642-AEB6-F155D4F1101D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0A24353A-0432-4893-A458-1F5746E60B77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A24353A-0432-4893-A458-1F5746E60B77}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0A24353A-0432-4893-A458-1F5746E60B77}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0A24353A-0432-4893-A458-1F5746E60B77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

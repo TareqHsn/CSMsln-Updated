@@ -1,6 +1,5 @@
-﻿
-using CSM.Core.Entities;
-using CSM.Core.Interfaces;
+﻿using CSM.Core.Entities;
+using CSM.Core.Interfaces.ITasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace CSM.Infrastructure.Data

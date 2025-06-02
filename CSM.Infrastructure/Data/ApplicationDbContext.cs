@@ -13,7 +13,8 @@ namespace CSM.Infrastructure.Data
         }
 
         public DbSet<Tasks> Tasks { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
 
-       
+
     }
 }

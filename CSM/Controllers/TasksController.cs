@@ -1,6 +1,6 @@
-﻿using CSM.Core.Models;
-using CSM.Core.UseCases.Commands;
-using CSM.Core.UseCases.Queries;
+﻿using CSM.Core.Models.Task_VM;
+using CSM.Core.UseCases.Commands.TasksCommands;
+using CSM.Core.UseCases.Queries.TaskQueries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +22,7 @@ namespace CSM.Controllers
             _userManager = userManager;
         }
 
+        # region Task List and Bin List
         public async Task<IActionResult> List(string sortOrder, string filterStatus, int pageNumber = 1)
         {
             ViewBag.CurrentSort = sortOrder;
@@ -36,7 +37,7 @@ namespace CSM.Controllers
                 { "Completed", allTasks.Tasks.Count(t => t.IsCompleted) },
                 { "Pending", allTasks.Tasks.Count(t => !t.IsCompleted) }
             };
-            ViewBag.TicketCounts = taskCounts;
+            ViewBag.TaskCount = taskCounts;
 
             var query = new GetTaskListQuery
             {
@@ -76,7 +77,7 @@ namespace CSM.Controllers
                 { "Completed", allTasks.Tasks.Count(t => t.IsCompleted) },
                 { "Pending", allTasks.Tasks.Count(t => !t.IsCompleted) }
             };
-            ViewBag.TicketCounts = taskCounts;
+            ViewBag.TaskCount = taskCounts;
 
             var query = new GetTaskListQuery
             {
@@ -101,7 +102,9 @@ namespace CSM.Controllers
 
             return View("List", viewModel);
         }
+        #endregion End of Task List and Bin List
 
+        #region Delete
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SoftDeleteTaskIndex(int task_id, string sortOrder, string filterStatus, int pageNumber)
@@ -152,65 +155,9 @@ namespace CSM.Controllers
             }
             return RedirectToAction("Bin", new { sortOrder, filterStatus, pageNumber });
         }
+        #endregion End of Delete
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateTaskStatus(int id, bool isCompleted, string sortOrder, string filterStatus, int pageNumber)
-        {
-            var command = new UpdateTaskStatusCommand { Id = id, IsCompleted = isCompleted };
-            var result = await _mediator.Send(command);
-            if (result > 0)
-            {
-                TempData["SuccessMessage"] = "Task status updated successfully.";
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "Failed to update task status.";
-            }
-            return RedirectToAction(ViewBag.Status == "Bin" ? "Bin" : "List", new { sortOrder, filterStatus, pageNumber });
-        }
-
-        public async Task<IActionResult> Details(int id)
-        {
-            var query = new GetTaskByIdQuery { TaskId = id };
-            var task = await _mediator.Send(query);
-            if (task == null)
-            {
-                return NotFound();
-            }
-            return View(task);
-        }
-
-        public async Task<IActionResult> Create()
-        {
-            var userId = _userManager.GetUserId(User);
-            ViewBag.UserId = userId;
-            ViewBag.Users = await _userManager.Users.Select(u => new { u.Id, u.UserName }).ToListAsync();
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Core.Entities.Tasks task)
-        {
-            if (ModelState.IsValid)
-            {
-                if (string.IsNullOrEmpty(task.UserId))
-                {
-                    task.UserId = null;
-                }
-                var command = new CreateTaskCommand { Task = task };
-                var result = await _mediator.Send(command);
-                if (result > 0)
-                {
-                    TempData["SuccessMessage"] = "Task created successfully.";
-                    return RedirectToAction(nameof(List));
-                }
-                ModelState.AddModelError("", "Failed to create task.");
-            }
-            ViewBag.Users = await _userManager.Users.Select(u => new { u.Id, u.UserName }).ToListAsync();
-            return View(task);
-        }
+        #region Update Task and Task Status
 
         public async Task<IActionResult> Edit(int id)
         {
@@ -262,5 +209,70 @@ namespace CSM.Controllers
             ViewBag.Users = await _userManager.Users.Select(u => new { u.Id, u.UserName }).ToListAsync();
             return View(task);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateTaskStatus(int id, bool isCompleted, string sortOrder, string filterStatus, int pageNumber)
+        {
+            var command = new UpdateTaskStatusCommand { TaskId = id, IsCompleted = isCompleted };
+            var result = await _mediator.Send(command);
+            if (result > 0)
+            {
+                TempData["SuccessMessage"] = "Task status updated successfully.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to update task status.";
+            }
+            return RedirectToAction(ViewBag.Status == "Bin" ? "Bin" : "List", new { sortOrder, filterStatus, pageNumber });
+        }
+        #endregion Update Task and Task Status
+
+        #region Create Task
+        public async Task<IActionResult> Create()
+        {
+            var userId = _userManager.GetUserId(User);
+            ViewBag.UserId = userId;
+            ViewBag.Users = await _userManager.Users.Select(u => new { u.Id, u.UserName }).ToListAsync();
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Core.Entities.Tasks task)
+        {
+            if (ModelState.IsValid)
+            {
+                if (string.IsNullOrEmpty(task.UserId))
+                {
+                    task.UserId = null;
+                }
+                var command = new CreateTaskCommand { Task = task };
+                var result = await _mediator.Send(command);
+                if (result > 0)
+                {
+                    TempData["SuccessMessage"] = "Task created successfully.";
+                    return RedirectToAction(nameof(List));
+                }
+                ModelState.AddModelError("", "Failed to create task.");
+            }
+            ViewBag.Users = await _userManager.Users.Select(u => new { u.Id, u.UserName }).ToListAsync();
+            return View(task);
+        }
+
+        #endregion
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var query = new GetTaskByIdQuery { TaskId = id };
+            var task = await _mediator.Send(query);
+            if (task == null)
+            {
+                return NotFound();
+            }
+            return View(task);
+        }
+
+        
     }
 }

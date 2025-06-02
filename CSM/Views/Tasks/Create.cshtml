@@ -56,7 +56,7 @@
                                 </div>
                                 <div id="userSelectGroup" class="input-group mt-2" style="display: none;">
                                     <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                    <select asp-for="UserId" class="form-control" asp-items="@(new SelectList(ViewBag.Users, "Id", "UserName"))">
+                                    <select asp-for="UserId" class="form-control" asp-items="@(new SelectList(ViewBag.Users, "Id", "UserName"))" required>
                                         <option value="">Select a user</option>
                                     </select>
                                 </div>

@@ -1,11 +1,12 @@
 ﻿using CSM.Core.Entities;
-using CSM.Core.Interfaces;
+using CSM.Core.Interfaces.ITasks;
 
 namespace CSM.Infrastructure.Data
 {
     public class TaskCommandRepository : ITaskCommandRepository
     {
         private readonly ApplicationDbContext _context;
+
 
         public TaskCommandRepository(ApplicationDbContext context)
         {
