@@ -19,23 +19,8 @@ namespace CSM
             builder.Services.AddDbContext<Infrastructure.Data.ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
-
-            // Register repositories with their concrete implementations
-            builder.Services.AddScoped<Core.Interfaces.ITaskCommandRepository, Infrastructure.Data.TaskCommandRepository>();
-            builder.Services.AddScoped<Core.Interfaces.ITaskQueryRepository, Infrastructure.Data.TaskQueryRepository>();
-
-            // Register use case services
-            builder.Services.AddScoped<Core.Interfaces.ITaskCommandUseCase, Application.Services.TaskCommandService>();
-            builder.Services.AddScoped<Core.Interfaces.ITaskQueryUseCase, Application.Services.TaskQueryService>();
-
-            // Register MediatR
-            builder.Services.AddMediatR(typeof(Program).Assembly);
-
-            // Add DefaultIdentity with roles support (uncomment and configure as needed)
-            // builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            //     .AddRoles<IdentityRole>()
-            //     .AddEntityFrameworkStores<Infrastructure.Data.ApplicationDbContext>();
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<Infrastructure.Data.ApplicationDbContext>();
 
             // Add additional services
             builder.Services.AddMemoryCache();
@@ -45,6 +30,17 @@ namespace CSM
 
             #region Injection
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            // Register repositories with their concrete implementations
+            builder.Services.AddScoped<Core.Interfaces.ITaskCommandRepository, Infrastructure.Data.TaskCommandRepository>();
+            builder.Services.AddScoped<Core.Interfaces.ITaskQueryRepository, Infrastructure.Data.TaskQueryRepository>();
+
+            // Register use case services
+            builder.Services.AddScoped<Core.Interfaces.ITaskCommandUseCase, Application.Services.TaskCommandService>();
+            builder.Services.AddScoped<Core.Interfaces.ITaskQueryUseCase, Application.Services.TaskQueryService>();
+
+            // Register MediatR with the Core assembly where handlers reside
+            builder.Services.AddMediatR(typeof(CSM.Core.UseCases.Queries.GetTaskListQuery).Assembly);
             #endregion
 
             // Configure Identity options

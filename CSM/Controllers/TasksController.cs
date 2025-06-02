@@ -2,12 +2,14 @@
 using CSM.Core.UseCases.Commands;
 using CSM.Core.UseCases.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CSM.Controllers
 {
+    [Authorize]
     public class TasksController : Controller
     {
         private readonly IMediator _mediator;

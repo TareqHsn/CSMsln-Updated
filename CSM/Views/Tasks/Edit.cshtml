@@ -17,23 +17,20 @@
                         <input type="hidden" asp-for="Id" />
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
 
-                        <!-- Title (full width) -->
                         <div class="form-group mb-4">
                             <label asp-for="Title" class="form-label fw-semibold">Title<span class="text-danger">*</span></label>
                             <input asp-for="Title" class="form-control form-control-lg" placeholder="What needs to be done?" required />
                             <span asp-validation-for="Title" class="text-danger small"></span>
                         </div>
 
-                        <!-- Description (full width) -->
                         <div class="form-group mb-4">
                             <label asp-for="Description" class="form-label fw-semibold"></label>
                             <textarea asp-for="Description" class="form-control" rows="3" placeholder="Add details about the task..."></textarea>
                             <span asp-validation-for="Description" class="text-danger small"></span>
                         </div>
 
-                        <!-- Side-by-side fields -->
                         <div class="row g-3 mb-4">
-                            <!-- Due Date -->
+
                             <div class="col-md-6">
                                 <label asp-for="DueDate" class="form-label fw-semibold"></label>
                                 <div class="input-group">
@@ -64,13 +61,11 @@
                             </div>
                         </div>
 
-                        <!-- Completed checkbox -->
                         <div class="form-group form-check form-switch mb-4">
                             <input class="form-check-input" type="checkbox" role="switch" asp-for="IsCompleted" />
                             <label class="form-check-label fw-semibold" asp-for="IsCompleted"></label>
                         </div>
 
-                        <!-- Form actions -->
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                             <a asp-action="List" class="btn btn-outline-secondary me-md-2">
                                 <i class="fas fa-arrow-left me-2"></i>Cancel
@@ -107,7 +102,42 @@
     }
 </style>
 
-@section Scripts {
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Toggle user selection dropdown based on checkbox state
+        $('#everyoneCheckbox, #customCheckbox').change(function () {
+            var everyoneChecked = $('#everyoneCheckbox').is(':checked');
+            var customChecked = $('#customCheckbox').is(':checked');
+
+            if (everyoneChecked && customChecked) {
+                // If both are checked, prioritize "Everyone" and uncheck "Custom"
+                $('#customCheckbox').prop('checked', false);
+                $('#userSelectGroup').hide();
+                $('#UserId').val(''); // Clear UserId for "Everyone"
+            } else if (everyoneChecked) {
+                $('#userSelectGroup').hide();
+                $('#UserId').val(''); // Clear UserId for "Everyone"
+            } else if (customChecked) {
+                $('#userSelectGroup').show();
+            } else {
+                $('#userSelectGroup').hide();
+                $('#UserId').val(''); // Clear if no option selected
+            }
+        });
+
+        // Initial check based on model state
+        if ($('#everyoneCheckbox').is(':checked')) {
+            $('#userSelectGroup').hide();
+        } else if ($('#customCheckbox').is(':checked')) {
+            $('#userSelectGroup').show();
+        }
+    });
+</script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

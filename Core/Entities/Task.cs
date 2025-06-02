@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+
 
 namespace CSM.Core.Entities
 {
@@ -20,7 +16,7 @@ namespace CSM.Core.Entities
 
         public DateTime? DueDate { get; set; }
 
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         public int IsDeleted { get; set; }
     }
 }

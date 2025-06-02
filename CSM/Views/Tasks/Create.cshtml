@@ -1,5 +1,6 @@
 ﻿@model CSM.Core.Entities.Tasks
 
+
 @{
     ViewData["Title"] = "Create Task";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -106,37 +107,38 @@
     }
 </style>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#everyoneCheckbox, #customCheckbox').change(function () {
-                var everyoneChecked = $('#everyoneCheckbox').is(':checked');
-                var customChecked = $('#customCheckbox').is(':checked');
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Toggle user selection dropdown based on checkbox state
+        $('#everyoneCheckbox, #customCheckbox').change(function () {
+            var everyoneChecked = $('#everyoneCheckbox').is(':checked');
+            var customChecked = $('#customCheckbox').is(':checked');
 
-                if (everyoneChecked && customChecked) {
-                    $('#customCheckbox').prop('checked', false);
-                    $('#userSelectGroup').hide();
-                } else if (everyoneChecked) {
-                    $('#userSelectGroup').hide();
-                    $('#UserId').val('');
-                } else if (customChecked) {
-                    $('#userSelectGroup').show();
-                } else {
-                    $('#userSelectGroup').hide();
-                    $('#UserId').val('');
-                }
-            });
-
-            if ($('#everyoneCheckbox').is(':checked')) {
+            if (everyoneChecked && customChecked) {
+                // If both are checked, prioritize "Everyone" and uncheck "Custom"
+                $('#customCheckbox').prop('checked', false);
                 $('#userSelectGroup').hide();
-            } else if ($('#customCheckbox').is(':checked')) {
+            } else if (everyoneChecked) {
+                $('#userSelectGroup').hide();
+                $('#UserId').val(''); // Clear UserId for "Everyone"
+            } else if (customChecked) {
                 $('#userSelectGroup').show();
+            } else {
+                $('#userSelectGroup').hide();
+                $('#UserId').val(''); // Clear if no option selected
             }
         });
-    </script>
-}
+
+        // Initial check based on default state
+        if ($('#everyoneCheckbox').is(':checked')) {
+            $('#userSelectGroup').hide();
+        } else if ($('#customCheckbox').is(':checked')) {
+            $('#userSelectGroup').show();
+        }
+    });
+</script>

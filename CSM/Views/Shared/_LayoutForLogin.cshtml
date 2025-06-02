@@ -1,0 +1,121 @@
+﻿
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CSM Bangladesh</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+ 
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Jost:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    @RenderSection("styles", false)
+
+    <style>
+        body {
+           
+        }
+
+        header {
+            
+        }
+        #header {
+            transition: all 0.5s;
+            z-index: 997;
+            padding: 0px 0 !important;
+        }
+        .footer{
+            position: fixed;
+            background-color: rgba(40, 58, 90, 0.9);
+            bottom: 0px;
+            margin-right: auto;
+            margin-left: auto;
+            padding-top:25px;
+            padding-bottom:25px;
+            height:100px;
+            width:100%;
+            height:auto;
+            color:white;
+
+        }
+        .homeIcon{
+            color:white;
+            font-size:20px;
+        }
+
+        #topNav {
+            padding: 20px 0px;
+            background-color: rgba(40, 58, 90, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <header id="header" class="fixed-top">
+
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3" id="topNav">
+            <div class="container-fluid">
+                <span class="navbar-brand text-white fw-bold">ToDo -Management</span>
+                <button class="navbar-toggler bg-white" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">
+                                <i class="fa-solid fa-house homeIcon"></i>
+                            </a>
+                        </li>
+                       
+                    </ul>
+                   
+                </div>
+            </div>
+        </nav>
+        
+
+    </header>
+    <div class="container-fluid">
+        <main role="main" class="pb-3 main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- ======= Footer ======= -->
+    <footer id="footer" class="footer">
+        <div class="container-fluid footer-bottom clearfix">
+            <div class="copyright">
+                &copy; Copyright <strong><span>CSM -Bangladesh.</span></strong> All Rights Reserved
+            </div>
+            <div class="credits">
+               
+            </div>
+        </div>
+    </footer><!-- End Footer -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- Vendor JS Files -->
+
+    <script src="~/assets/vendor/aos/aos.js"></script>
+    <script src="~/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="~/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="~/assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="~/assets/vendor/waypoints/noframework.waypoints.js"></script>
+    <script src="~/assets/vendor/php-email-form/validate.js"></script>
+
+    <!-- Template Main JS File -->
+    <script src="~/assets/js/main.js"></script>
+
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

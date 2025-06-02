@@ -1,8 +1,301 @@
 ﻿@model CSM.Core.Models.TaskListViewModel
-
 @{
+    ViewData["Title"] = Model.Status == "Bin" ? "Bin" : "Task List";
+
+    var errorMessage = TempData["ErrorMessage"] as string;
+    var successMessage = TempData["SuccessMessage"] as string;
+    var searchQuery = ViewData["SearchQuery"] as string ?? "";
+    var taskCounts = ViewBag.TaskCounts as Dictionary<string, int> ?? new Dictionary<string, int>
+    {
+        { "Completed", 0 },
+        { "Pending", 0 }
+    };
+    int totalTasks = taskCounts["Completed"] + taskCounts["Pending"];
+    totalTasks = totalTasks == 0 ? 1 : totalTasks; // Avoid division by zero
+    string status = Model.Status ?? "Active";
+    string dueDateSortParm = ViewBag.DueDateSortParm ?? "due_date_asc";
+    string currentFilter = Model.FilterStatus ?? "all";
+    int currentPage = Model.CurrentPage;
+    int totalPages = Model.TotalPages;
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div id="errorMessage" class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div id="successMessage" class="alert alert-success" role="alert">
+        @successMessage
+    </div>
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+
+<div class="row pb-2">
+    <h1 class="mb-sm-1 font-size-18">@(status == "Bin" ? "BIN" : "TASK LIST")</h1>
+
+    <div class="col text-end pt-1">
+        @if (status != "Bin")
+        {
+            <a asp-controller="Tasks" asp-action="Create" class="btn btn-success btn-rounded waves-effect waves-light">
+                + Add New
+            </a>
+        }
+    </div>
+</div>
+
+<div class="row mb-12">
+    <div class="col-md-6">
+        <a asp-action="@(status == "Bin" ? "Bin" : "List")" asp-route-sortOrder="@Model.SortOrder" asp-route-filterStatus="completed" asp-route-pageNumber="@currentPage" class="text-decoration-none">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Completed Tasks</h5>
+                    <p class="card-text">@taskCounts["Completed"] / @totalTasks</p>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" style="width: @(taskCounts["Completed"] * 100.0 / totalTasks)%;" role="progressbar" aria-valuenow="@taskCounts["Completed"]" aria-valuemin="0" aria-valuemax="@totalTasks"></div>
+                    </div>
+                    <small class="text-muted">View</small>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a asp-action="@(status == "Bin" ? "Bin" : "List")" asp-route-sortOrder="@Model.SortOrder" asp-route-filterStatus="pending" asp-route-pageNumber="@currentPage" class="text-decoration-none">
+            <div class="card border-danger">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Pending Tasks</h5>
+                    <p class="card-text">@taskCounts["Pending"] / @totalTasks</p>
+                    <div class="progress">
+                        <div class="progress-bar bg-danger" style="width: @(taskCounts["Pending"] * 100.0 / totalTasks)%;" role="progressbar" aria-valuenow="@taskCounts["Pending"]" aria-valuemin="0" aria-valuemax="@totalTasks"></div>
+                    </div>
+                    <small class="text-muted">View</small>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a class="nav-link @(status == "Active" ? "active" : "")" asp-action="List" asp-route-sortOrder="@Model.SortOrder" asp-route-filterStatus="all" asp-route-pageNumber="1">Tasks</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(status == "Bin" ? "active" : "")" asp-action="Bin" asp-route-sortOrder="@Model.SortOrder" asp-route-filterStatus="all" asp-route-pageNumber="1">Bin</a>
+    </li>
+</ul>
+
+@Html.AntiForgeryToken()
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table">
+            <thead class="table-light">
+                <tr>
+                    <th hidden="hidden">Task ID</th>
+                    <th></th>
+                    <th>Task Title</th>
+                    <th>Description</th>
+                    <th>
+                        <a asp-action="@(status == "Bin" ? "Bin" : "List")" asp-route-sortOrder="@dueDateSortParm" asp-route-filterStatus="@currentFilter" asp-route-pageNumber="@currentPage">
+                            Due Date
+                            @if (Model.SortOrder == "due_date_asc")
+                            {
+                                <i class="bx bx-sort-up"></i>
+                            }
+                            else if (Model.SortOrder == "due_date_desc")
+                            {
+                                <i class="bx bx-sort-down"></i>
+                            }
+                        </a>
+                    </th>
+                    <th>Status</th>
+                    <th>Assign To</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Tasks)
+                {
+                    <tr>
+                        <td>
+                            @if (status != "Bin")
+                            {
+                                <input type="checkbox"
+                                       class="complete-checkbox"
+                                       data-task-id="@item.Id"
+                                @(item.IsCompleted ? "checked" : "") />
+                            }
+                        </td>
+
+                        <td>
+                            <span class="task-title @(item.IsCompleted ? "text-decoration-line-through" : "")"
+                                  id="title-@item.Id">
+                                @item.Title
+                            </span>
+                        </td>
+
+                        <td>@Html.DisplayFor(modelItem => @item.Description)</td>
+
+                        <td>@(item.DueDate.HasValue ? item.DueDate.Value.ToString("dd/MM/yyyy") : "")</td>
+
+                        <td>
+                            <span class="badge @(item.IsCompleted ? "bg-success" : "bg-danger")">
+                                @(item.IsCompleted ? "Completed" : "Pending")
+                            </span>
+                        </td>
+
+                        <td></td>
+                        <td class="d-flex gap-1">
+                            @if (status != "Bin")
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Update">
+                                    <i class="bx bx-edit">Edit</i>
+                                </a>
+                            }
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="Details">
+                                <i class="bx bx-detail">View</i>
+                            </a>
+                            @if (status != "Bin")
+                            {
+                                <form asp-action="SoftDeleteTaskIndex" method="post" onsubmit="return handleSingleDelete();" style="display: inline;">
+                                    <input type="hidden" name="task_id" value="@item.Id" />
+                                    <input type="hidden" name="sortOrder" value="@Model.SortOrder" />
+                                    <input type="hidden" name="filterStatus" value="@currentFilter" />
+                                    <input type="hidden" name="pageNumber" value="@currentPage" />
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Delete Task">
+                                        <i class="bx bx-trash">Delete</i>
+                                    </button>
+                                </form>
+                            }
+                            @if (status == "Bin")
+                            {
+                                <form asp-action="RestoreTask" method="post" onsubmit="return handleRestore();" style="display: inline;">
+                                    <input type="hidden" name="task_id" value="@item.Id" />
+                                    <input type="hidden" name="sortOrder" value="@Model.SortOrder" />
+                                    <input type="hidden" name="filterStatus" value="@currentFilter" />
+                                    <input type="hidden" name="pageNumber" value="@currentPage" />
+                                    <button type="submit" class="btn btn-sm btn-success" title="Restore Task">
+                                        <i class="bx bx-undo">Restore</i>
+                                    </button>
+                                </form>
+                                <form asp-action="PermanentDeleteTask" method="post" onsubmit="return handlePermanentDelete();" style="display: inline;">
+                                    <input type="hidden" name="task_id" value="@item.Id" />
+                                    <input type="hidden" name="sortOrder" value="@Model.SortOrder" />
+                                    <input type="hidden" name="filterStatus" value="@currentFilter" />
+                                    <input type="hidden" name="pageNumber" value="@currentPage" />
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Permanent Delete">
+                                        <i class="bx bx-trash">Permanent Delete</i>
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (totalPages > 1)
+        {
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="@(status == "Bin" ? "Bin" : "List")" asp-route-sortOrder="@Model.SortOrder" asp-route-filterStatus="@currentFilter" asp-route-pageNumber="@(currentPage - 1)">Previous</a>
+                    </li>
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
+                            <a class="page-link" asp-action="@(status == "Bin" ? "Bin" : "List")" asp-route-sortOrder="@Model.SortOrder" asp-route-filterStatus="@currentFilter" asp-route-pageNumber="@i">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                        <a class="page-link" asp-action="@(status == "Bin" ? "Bin" : "List")" asp-route-sortOrder="@Model.SortOrder" asp-route-filterStatus="@currentFilter" asp-route-pageNumber="@(currentPage + 1)">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <text>toastr.success('@successMessage');</text>
+    }
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <text>toastr.error('@errorMessage');</text>
+    }
+
+        $('.complete-checkbox').change(function () {
+            var checkbox = $(this);
+            var taskId = checkbox.data('task-id');
+            var isCompleted = checkbox.is(':checked');
+
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: '/Tasks/UpdateTaskStatus',
+                type: 'POST',
+                data: {
+                    __RequestVerificationToken: token,
+                    id: taskId,
+                    isCompleted: isCompleted,
+                    sortOrder: '@Model.SortOrder',
+                    filterStatus: '@currentFilter',
+                    pageNumber: '@currentPage'
+                },
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    toastr.error('Failed to update task status.');
+                    checkbox.prop('checked', !isCompleted);
+                }
+            });
+        });
+
+        window.handleSingleDelete = function () {
+            return confirm('Are you sure you want to move this task to the Bin?');
+        };
+
+        window.handleRestore = function () {
+            return confirm('Are you sure you want to restore this task?');
+        };
+
+        window.handlePermanentDelete = function () {
+            return confirm('Are you sure you want to permanently delete this task? This action cannot be undone.');
+        };
+    });
+</script>
+
+
+@* @{
     ViewData["Title"] = Model.Status == "Bin" ? "Deleted Tasks" : "Task List";
     Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Success/Error Messages -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 }
 
 <div class="container mt-5">
@@ -51,32 +344,18 @@
                             <form asp-action="List" method="get" class="d-flex gap-2">
                                 <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" />
                                 <select name="filterStatus" class="form-select" onchange="this.form.submit()">
-                                   @*  <option value="all" @(Model.FilterStatus == "all" ? "selected" : "")>All</option>
-                                    <option value="completed" @(Model.FilterStatus == "completed" ? "selected" : "")>Completed</option>
-                                    <option value="pending" @(Model.FilterStatus == "pending" ? "selected" : "")>Pending</option> *@
+                                    <option value="all" selected="@(Model.FilterStatus == "all")">All</option>
+                                    <option value="completed" selected="@(Model.FilterStatus == "completed")">Completed</option>
+                                    <option value="pending" selected="@(Model.FilterStatus == "pending")">Pending</option>
                                 </select>
                             </form>
-                            <a asp-action="List" asp-route-sortOrder="@ViewBag.DueDateSortParm" asp-route-filterStatus="@ViewBag.CurrentFilter" class="btn btn-outline-secondary">
+                            <a asp-action="List" asp-route-sortOrder="@ViewBag.DueDateSortParm" asp-route-filterStatus="@ViewBag.CurrentFilter" class="btn btn-secondary">
                                 <i class="fas fa-sort me-2"></i>Sort by Due Date
                             </a>
                         </div>
                     </div>
 
-                    <!-- Success/Error Messages -->
-                    @if (TempData["SuccessMessage"] != null)
-                    {
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            @TempData["SuccessMessage"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    }
-                    @if (TempData["ErrorMessage"] != null)
-                    {
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            @TempData["ErrorMessage"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    }
+                   
 
                     <!-- Task List -->
                     <div class="table-responsive">
@@ -118,10 +397,10 @@
                                                 <div class="d-flex gap-2">
                                                     @if (Model.Status != "Bin")
                                                     {
-                                                        <a asp-action="Details" asp-route-id="@task.Id" class="btn btn-sm btn-outline-info">
+                                                        <a asp-action="Details" asp-route-id="@task.Id" class="btn btn-sm btn-info">
                                                             <i class="fas fa-eye"></i>
                                                         </a>
-                                                        <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-sm btn-outline-primary">
+                                                        <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-sm btn-primary">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                         <form asp-action="SoftDeleteTaskIndex" method="post" style="display:inline;">
@@ -129,7 +408,7 @@
                                                             <input type="hidden" name="sortOrder" value="@Model.SortOrder" />
                                                             <input type="hidden" name="filterStatus" value="@Model.FilterStatus" />
                                                             <input type="hidden" name="pageNumber" value="@Model.CurrentPage" />
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to move this task to the bin?')">
+                                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to move this task to the bin?')">
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
                                                         </form>
@@ -139,7 +418,7 @@
                                                             <input type="hidden" name="sortOrder" value="@Model.SortOrder" />
                                                             <input type="hidden" name="filterStatus" value="@Model.FilterStatus" />
                                                             <input type="hidden" name="pageNumber" value="@Model.CurrentPage" />
-                                                            <button type="submit" class="btn btn-sm btn-outline-@(task.IsCompleted ? "warning" : "success")">
+                                                            <button type="submit" class="btn btn-sm btn-@(task.IsCompleted ? "warning" : "success")">
                                                                 <i class="fas fa-@(task.IsCompleted ? "times" : "check")"></i>
                                                             </button>
                                                         </form>
@@ -151,7 +430,7 @@
                                                             <input type="hidden" name="sortOrder" value="@Model.SortOrder" />
                                                             <input type="hidden" name="filterStatus" value="@Model.FilterStatus" />
                                                             <input type="hidden" name="pageNumber" value="@Model.CurrentPage" />
-                                                            <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Are you sure you want to restore this task?')">
+                                                            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to restore this task?')">
                                                                 <i class="fas fa-undo"></i>
                                                             </button>
                                                         </form>
@@ -160,7 +439,7 @@
                                                             <input type="hidden" name="sortOrder" value="@Model.SortOrder" />
                                                             <input type="hidden" name="filterStatus" value="@Model.FilterStatus" />
                                                             <input type="hidden" name="pageNumber" value="@Model.CurrentPage" />
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to permanently delete this task? This action cannot be undone.')">
+                                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to permanently delete this task? This action cannot be undone.')">
                                                                 <i class="fas fa-trash-alt"></i>
                                                             </button>
                                                         </form>
@@ -219,4 +498,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-}
+} *@

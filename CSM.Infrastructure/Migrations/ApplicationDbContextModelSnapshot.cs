@@ -52,7 +52,7 @@ namespace CSM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Tasks", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

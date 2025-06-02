@@ -3,6 +3,178 @@
 
 @{
     ViewData["Title"] = "Log in";
+    Layout = "_LayoutForLogin";
+}
+<style>
+    #container {
+        width: 100%; /*width needs to be setup*/
+        height: calc(80vh); /*height needs to be setup*/
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        vertical-align: middle;
+    }
+
+    .item {
+        margin: auto;
+        width: 400px;
+    }
+
+    body {
+        background-image: url("");
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    #container {
+        position: fixed;
+    }
+
+    #loginImage {
+        opacity: .5;
+        margin-top: -200px;
+        height: auto;
+    }
+
+    #loginForm {
+        background-color: rgba(40, 58, 90, 0.9);
+        padding: 30px 20px;
+        opacity: .8
+    }
+
+    .ulColor {
+        color: #dfd5fb;
+    }
+
+    @@media screen and (max-width: 1950px) {
+        #loginImage {
+            height: 100vh !important;
+            margin-top: -75px !important;
+        }
+
+        #loginForm {
+            height: 70%;
+            margin: auto;
+            height: 350px;
+        }
+    }
+
+    @@media screen and (max-width: 1368px) {
+        #loginImage {
+            height: 100vh !important;
+            margin-top: -75px !important;
+        }
+
+        #loginForm {
+            height: 70%;
+            margin: auto;
+            height: 350px;
+        }
+    }
+
+    @@media screen and (max-width: 900px) {
+        #loginImage {
+            height: 100vh !important;
+            margin-top: -72px !important;
+        }
+    }
+
+    @@media screen and (max-width: 600px) {
+        #loginImage {
+            height: 100vh !important;
+            margin-top: -72px !important;
+        }
+
+        #loginForm {
+            height: 300px;
+            margin: auto;
+        }
+    }
+
+    @@media screen and (max-width: 400px) {
+        #loginImage {
+            height: 100vh !important;
+            margin-top: -72px !important;
+        }
+
+        #loginForm {
+            height: 300px;
+            margin: auto 20px;
+            padding: 20px;
+        }
+    }
+
+    }
+</style>
+<div class="row loginbody">
+    <img src="~/temp/images/loginPage.png" id="loginImage" />
+    <div class="col-md-4" id="container">
+        <section class="item" id="loginForm">
+            <h3 class="text-white text-center">User Login</h3>
+            <form id="account" method="post">
+
+                <hr />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-floating">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                    <label asp-for="Input.Email" class="form-label"></label>
+                    <span asp-validation-for="Input.Email" class="ulColor"></span>
+                </div>
+                <div class="form-floating mt-3 mb-2">
+                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
+                    <label asp-for="Input.Password" class="form-label"></label>
+                    <span asp-validation-for="Input.Password" class="ulColor"></span>
+                </div>
+                <div>
+                    <div class="checkbox">
+                        <label asp-for="Input.RememberMe" class="form-label text-white">
+                            <input class="form-check-input" asp-for="Input.RememberMe" />
+                            @Html.DisplayNameFor(m => m.Input.RememberMe)
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <button id="login-submit" type="submit" class="w-100 btn btn btn-secondary">Log in</button>
+                </div>
+                <div class="pb-5 bottomButton">
+                </div>
+                <p>
+                    <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                </p>
+            </form>
+        </section>
+    </div>
+
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $("ul").addClass("ulColor");
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* @page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -81,3 +253,4 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+ *@
