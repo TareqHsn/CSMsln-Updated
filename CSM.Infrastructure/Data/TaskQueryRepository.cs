@@ -1,4 +1,4 @@
-﻿// Infrastructure/Data/TaskQueryRepository.cs
+﻿
 using CSM.Core.Entities;
 using CSM.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;

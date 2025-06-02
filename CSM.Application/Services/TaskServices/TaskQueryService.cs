@@ -1,7 +1,7 @@
 ﻿using CSM.Core.Interfaces;
 using CSM.Core.UseCases.Queries;
 
-namespace CSM.Application.Services
+namespace CSM.Application.Services.TaskServices
 {
     public class TaskQueryService : ITaskQueryUseCase
     {

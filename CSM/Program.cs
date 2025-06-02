@@ -1,4 +1,5 @@
 using CSM.Application.Services;
+using CSM.Application.Services.TaskServices;
 using CSM.Core.Interfaces;
 using CSM.Infrastructure.Data;
 using MediatR;
@@ -36,8 +37,8 @@ namespace CSM
             builder.Services.AddScoped<Core.Interfaces.ITaskQueryRepository, Infrastructure.Data.TaskQueryRepository>();
 
             // Register use case services
-            builder.Services.AddScoped<Core.Interfaces.ITaskCommandUseCase, Application.Services.TaskCommandService>();
-            builder.Services.AddScoped<Core.Interfaces.ITaskQueryUseCase, Application.Services.TaskQueryService>();
+            builder.Services.AddScoped<Core.Interfaces.ITaskCommandUseCase, TaskCommandService>();
+            builder.Services.AddScoped<Core.Interfaces.ITaskQueryUseCase,   TaskQueryService>();
 
             // Register MediatR with the Core assembly where handlers reside
             builder.Services.AddMediatR(typeof(CSM.Core.UseCases.Queries.GetTaskListQuery).Assembly);

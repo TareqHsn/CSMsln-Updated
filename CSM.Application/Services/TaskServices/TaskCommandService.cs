@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CSM.Core.Interfaces;
+﻿using CSM.Core.Interfaces;
 using CSM.Core.UseCases.Commands;
 
-namespace CSM.Application.Services
+namespace CSM.Application.Services.TaskServices
 {
     public class TaskCommandService : ITaskCommandUseCase
     {
