@@ -1,7 +1,7 @@
 Assalamuyalaikum,
 
 Project Overview:
-Welcome to my project repository. This is a task management application built to demonstrate my coding skills and proficiency in .NET Core development. Below, you will find a detailed guide to set up and run the project.
+This is a task management application built to demonstrate my coding skills and proficiency in .NET Core development. Below, you will find a detailed guide to set up and run the project.
 
 Technologies Used:
 Backend: .NET Core (MVC) Version 8
