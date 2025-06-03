@@ -35,7 +35,8 @@ Task Management:
 Navigate to the Tasks section to perform CRUD operations:
 Insert: Create new tasks.
 Update: Modify existing tasks.
-Delete: Remove tasks as needed.
+Delete: Remove tasks as needed.(Soft delete and hard delete, soft deleted task store in recycle bin tab)
+Status change: You can change task status from list by the click of checkbox.
 
 Notes:
 Ensure your MSSQL server is running and accessible before starting the application.
