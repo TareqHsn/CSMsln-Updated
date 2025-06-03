@@ -6,6 +6,6 @@ namespace CSM.Core.UseCases.Commands.TasksCommands
     {
         public int TaskId { get; set; }
         public bool IsCompleted { get; set; }
-        public string UserId { get; set; }
+       
     }
 }

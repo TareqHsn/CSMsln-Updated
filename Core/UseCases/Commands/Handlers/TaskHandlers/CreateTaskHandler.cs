@@ -1,4 +1,5 @@
-﻿using CSM.Core.Entities;
+﻿using CSM.Core.Common;
+using CSM.Core.Entities;
 using CSM.Core.Interfaces;
 using CSM.Core.UseCases.Commands.TasksCommands;
 using FluentValidation;
@@ -6,41 +7,50 @@ using MediatR;
 
 namespace CSM.Core.UseCases.Commands.Handlers.TaskHandlers
 {
+    
 
-    public class CreateTaskHandler : IRequestHandler<CreateTaskCommand, int>
+    public class CreateTaskCommandValidator : AbstractValidator<CreateTaskCommand>
+    {
+        public CreateTaskCommandValidator()
+        {
+            RuleFor(x => x.Task)
+                .NotNull()
+                .WithMessage("Task cannot be null.");
+
+            RuleFor(x => x.Task.Title)
+                .NotEmpty()
+                .WithMessage("Task title is required.")
+                .MaximumLength(100)
+                .WithMessage("Task title cannot exceed 100 characters.");
+        }
+    }
+
+    public class CreateTaskHandler : IRequestHandler<CreateTaskCommand, ResponseResult>
     {
         private readonly IUnitOfWork _unitOfWork;
-
 
         public CreateTaskHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-        public class CreateTaskCommandValidator : AbstractValidator<CreateTaskCommand>
+
+        public async Task<ResponseResult> Handle(CreateTaskCommand request, CancellationToken cancellationToken)
         {
-            public CreateTaskCommandValidator()
-            {
-                RuleFor(x => x.Task)
-                    .NotNull()
-                    .WithMessage("Task cannot be null.");
+            ResponseResult rr = new ResponseResult();
 
-                RuleFor(x => x.Task.Title)
-                    .NotEmpty()
-                    .WithMessage("Task title is required.")
-                    .MaximumLength(100)
-                    .WithMessage("Task title cannot exceed 100 characters.");
-
-               
-
-                
-            }
-        }
-
-
-        public async Task<int> Handle(CreateTaskCommand request, CancellationToken cancellationToken)
-        {
             try
             {
+                var validator = new CreateTaskCommandValidator();
+                var validationResult = validator.Validate(request);
+
+                if (!validationResult.IsValid)
+                {
+                    rr.Message = "Error: " + string.Join("\n", validationResult.Errors.Select(e => e.ErrorMessage));
+                    rr.StatusCode = 1000;
+                    rr.IsSuccessStatus = false;
+                    return rr;
+                }
+
                 await _unitOfWork.BeginTransactionAsync();
 
                 var taskId = await _unitOfWork.TaskCommandRepository.SaveTask(request.Task);
@@ -57,6 +67,7 @@ namespace CSM.Core.UseCases.Commands.Handlers.TaskHandlers
                     EntityName = "Task",
                     EntityId = request.Task.Id
                 };
+
                 var auditResult = await _unitOfWork.AuditLogRepository.LogAuditAsync(auditLog);
                 if (auditResult == 0)
                 {
@@ -64,16 +75,23 @@ namespace CSM.Core.UseCases.Commands.Handlers.TaskHandlers
                 }
 
                 await _unitOfWork.CommitTransactionAsync();
-                return taskId;
+
+                rr.Message = "Task created successfully.";
+                rr.StatusCode = 2000;
+                rr.IsSuccessStatus = true;
+                rr.Data = taskId;
+                return rr;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await _unitOfWork.RollbackTransactionAsync();
-                throw;
+
+                rr.Message = "Failed! " + ex.Message;
+                rr.StatusCode = 4000;
+                rr.IsSuccessStatus = false;
+                return rr;
             }
         }
     }
-
-
 
 }

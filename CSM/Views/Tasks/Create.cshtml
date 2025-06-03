@@ -1,60 +1,71 @@
 ﻿@model CSM.Core.Entities.Tasks
-
-
 @{
     ViewData["Title"] = "Create Task";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-5">
+<div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white py-3">
-                    <h2 class="h5 mb-0"><i class="fas fa-tasks me-2"></i>Add New Task</h2>
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-gradient-primary text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="h5 mb-0">
+                            <i class="fas fa-plus-circle me-2"></i>Create New Task
+                        </h2>
+                        <a asp-action="List" class="btn btn-sm btn-light">
+                            <i class="fas fa-arrow-left me-1"></i>Back to List
+                        </a>
+                    </div>
                 </div>
+
                 <div class="card-body p-4">
-                    <form asp-action="Create">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
-
-                        <!-- Title (full width) -->
-                        <div class="form-group mb-4">
-                            <label asp-for="Title" class="form-label fw-semibold">Title<span class="text-danger">*</span></label>
-                            <input asp-for="Title" class="form-control form-control-lg" placeholder="What needs to be done?" />
-                            <span asp-validation-for="Title" class="text-danger small"></span>
+                    <form asp-action="Create" class="needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show mb-4">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <strong>Please fix the following errors:</strong>
                         </div>
 
-                        <!-- Description (full width) -->
-                        <div class="form-group mb-4">
-                            <label asp-for="Description" class="form-label fw-semibold"></label>
-                            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Add details about the task..."></textarea>
-                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        <!-- Title -->
+                        <div class="mb-4">
+                            <label asp-for="Title" class="form-label fw-semibold">
+                                <i class="fas fa-heading me-1 text-muted"></i>Task Title <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fas fa-pencil-alt text-primary"></i></span>
+                                <input asp-for="Title" class="form-control form-control-lg" placeholder="Enter task title" required />
+                            </div>
+                            <span asp-validation-for="Title" class="text-danger small d-block mt-1"></span>
                         </div>
 
-                        <!-- Side-by-side fields -->
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label fw-semibold">
+                                <i class="fas fa-align-left me-1 text-muted"></i>Description
+                            </label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Provide detailed description..."></textarea>
+                          
+                            <span asp-validation-for="Description" class="text-danger small d-block mt-1"></span>
+                        </div>
+
+                        <!-- Date and Assignment -->
                         <div class="row g-3 mb-4">
                             <!-- Due Date -->
                             <div class="col-md-6">
-                                <label asp-for="DueDate" class="form-label fw-semibold"></label>
+                                <label asp-for="DueDate" class="form-label fw-semibold">
+                                    <i class="far fa-calendar-alt me-1 text-muted"></i>Due Date
+                                </label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                    <span class="input-group-text bg-light"><i class="far fa-clock text-primary"></i></span>
                                     <input type="datetime-local" asp-for="DueDate" class="form-control" />
                                 </div>
-                                <span asp-validation-for="DueDate" class="text-danger small"></span>
+                                <span asp-validation-for="DueDate" class="text-danger small d-block mt-1"></span>
                             </div>
 
+                           
                             <!-- User Assignment -->
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Assign To</label>
-                                <div class="form-check mb-2">
-                                    <input type="checkbox" class="form-check-input" id="everyoneCheckbox" name="everyoneCheckbox" value="true" />
-                                    <label class="form-check-label" for="everyoneCheckbox">Everyone</label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input type="checkbox" class="form-check-input" id="customCheckbox" name="customCheckbox" value="true" />
-                                    <label class="form-check-label" for="customCheckbox">Custom</label>
-                                </div>
-                                <div id="userSelectGroup" class="input-group mt-2" style="display: none;">
+                                <label class="form-label fw-semibold">Assign To <span class="text-danger">*</span></label>
+                                <div class="input-group mt-2">
                                     <span class="input-group-text"><i class="fas fa-user"></i></span>
                                     <select asp-for="UserId" class="form-control" asp-items="@(new SelectList(ViewBag.Users, "Id", "UserName"))" required>
                                         <option value="">Select a user</option>
@@ -62,22 +73,29 @@
                                 </div>
                                 <span asp-validation-for="UserId" class="text-danger small"></span>
                             </div>
+
                         </div>
 
-                        <!-- Completed checkbox -->
-                        <div class="form-group form-check form-switch mb-4">
-                            <input class="form-check-input" type="checkbox" role="switch" asp-for="IsCompleted" />
-                            <label class="form-check-label fw-semibold" asp-for="IsCompleted"></label>
+                        <!-- Status -->
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="statusToggle" asp-for="IsCompleted">
+                                <label class="form-check-label fw-semibold" for="statusToggle">
+                                    <i class="fas fa-check-circle me-1 text-muted"></i>Mark as Completed
+                                </label>
+                            </div>
                         </div>
 
-                        <!-- Form actions -->
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                            <a asp-action="List" class="btn btn-outline-secondary me-md-2">
-                                <i class="fas fa-arrow-left me-2"></i>Cancel
-                            </a>
-                            <button type="submit" class="btn btn-primary px-4">
-                                <i class="fas fa-save me-2"></i>Create Task
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                            <button type="reset" class="btn btn-outline-secondary">
+                                <i class="fas fa-undo me-1"></i>Reset
                             </button>
+                            <div>
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="fas fa-save me-1"></i>Create Task
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -86,59 +104,52 @@
     </div>
 </div>
 
-<style>
-    .form-control:focus {
-        border-color: #86b7fe;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+   <style>
+        .card {
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .card-header {
+            border-bottom: none;
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+        }
+
+        .form-control, .form-select {
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #86b7fe;
+                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+            }
+
+        .form-switch .form-check-input {
+            width: 3em;
+            margin-left: -0.5em;
+        }
+
+        .btn-check:checked + .btn-outline-primary {
+            background-color: rgba(13, 110, 253, 0.1);
+            border-color: #0d6efd;
+            color: #0d6efd;
+        }
+
+        #userSelectContainer {
+            display: none; /* Initially hidden */
+            transition: all 0.3s ease;
+        }
+   </style>
+
+
+  @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-    .card {
-        border: none;
-        border-radius: 0.5rem;
-    }
-
-    .form-switch .form-check-input {
-        width: 2.5em;
-        height: 1.5em;
-    }
-
-    #userSelectGroup {
-        transition: all 0.3s ease;
-    }
-</style>
-
-@{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-}
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        // Toggle user selection dropdown based on checkbox state
-        $('#everyoneCheckbox, #customCheckbox').change(function () {
-            var everyoneChecked = $('#everyoneCheckbox').is(':checked');
-            var customChecked = $('#customCheckbox').is(':checked');
 
-            if (everyoneChecked && customChecked) {
-                // If both are checked, prioritize "Everyone" and uncheck "Custom"
-                $('#customCheckbox').prop('checked', false);
-                $('#userSelectGroup').hide();
-            } else if (everyoneChecked) {
-                $('#userSelectGroup').hide();
-                $('#UserId').val(''); // Clear UserId for "Everyone"
-            } else if (customChecked) {
-                $('#userSelectGroup').show();
-            } else {
-                $('#userSelectGroup').hide();
-                $('#UserId').val(''); // Clear if no option selected
-            }
-        });
-
-        // Initial check based on default state
-        if ($('#everyoneCheckbox').is(':checked')) {
-            $('#userSelectGroup').hide();
-        } else if ($('#customCheckbox').is(':checked')) {
-            $('#userSelectGroup').show();
-        }
-    });
-</script>

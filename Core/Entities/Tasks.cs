@@ -16,7 +16,7 @@ namespace CSM.Core.Entities
 
         public DateTime? DueDate { get; set; }
 
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         public int IsDeleted { get; set; }
     }
 }

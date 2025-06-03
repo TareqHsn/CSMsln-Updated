@@ -28,19 +28,7 @@ namespace CSM.Core.UseCases.Commands.Handlers
                     throw new Exception("Failed to update task status.");
                 }
 
-                var auditLog = new AuditLog
-                {
-                    Action = request.IsCompleted ? "TaskCompleted" : "TaskReopened",
-                    UserId = request.UserId,
-                    Timestamp = DateTime.UtcNow,
-                    EntityName = "Task",
-                    EntityId = request.TaskId
-                };
-                var auditResult = await _unitOfWork.AuditLogRepository.LogAuditAsync(auditLog);
-                if (auditResult == 0)
-                {
-                    throw new Exception("Failed to log audit entry.");
-                }
+               
 
                 await _unitOfWork.CommitTransactionAsync();
                 return result;

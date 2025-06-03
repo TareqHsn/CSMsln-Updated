@@ -44,6 +44,7 @@ namespace CSM
 
             // Register MediatR with the Core assembly where handlers reside
             builder.Services.AddMediatR(typeof(GetTaskListQuery).Assembly);
+            //builder.Services.AddMediatR(typeof(CreateTaskCommand).Assembly);
 
             // Register UnitOfWork
             builder.Services.AddScoped<Core.Interfaces.IUnitOfWork, UnitOfWork>();

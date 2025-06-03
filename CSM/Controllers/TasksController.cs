@@ -1,4 +1,5 @@
-﻿using CSM.Core.Models.Task_VM;
+﻿using CSM.Core.Common;
+using CSM.Core.Models.Task_VM;
 using CSM.Core.UseCases.Commands.TasksCommands;
 using CSM.Core.UseCases.Queries.TaskQueries;
 using MediatR;
@@ -30,8 +31,11 @@ namespace CSM.Controllers
             ViewBag.DueDateSortParm = sortOrder == "due_date_asc" ? "due_date_desc" : "due_date_asc";
 
             var userId = _userManager.GetUserId(User);
+
             var allTasksQuery = new GetTaskListQuery { UserId = userId, PageNumber = 1, PageSize = int.MaxValue, IsDeleted = false };
+
             var allTasks = await _mediator.Send(allTasksQuery);
+
             var taskCounts = new Dictionary<string, int>
             {
                 { "Completed", allTasks.Tasks.Count(t => t.IsCompleted) },
@@ -175,7 +179,6 @@ namespace CSM.Controllers
             ViewBag.Users = await _userManager.Users.Select(u => new { u.Id, u.UserName }).ToListAsync();
             return View(task);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Core.Entities.Tasks task)
@@ -183,12 +186,16 @@ namespace CSM.Controllers
             if (ModelState.IsValid)
             {
                 var userId = _userManager.GetUserId(User);
+
+                
                 var existingTaskQuery = new GetTaskByIdQuery { TaskId = task.Id };
                 var existingTask = await _mediator.Send(existingTaskQuery);
+
                 if (existingTask == null)
                 {
                     return NotFound();
                 }
+
                 if (existingTask.UserId != userId && existingTask.UserId != null)
                 {
                     return Forbid();
@@ -197,18 +204,72 @@ namespace CSM.Controllers
                 {
                     task.UserId = null;
                 }
+
+                // handler
                 var command = new UpdateTaskCommand { Task = task };
-                var result = await _mediator.Send(command);
-                if (result > 0)
+                ResponseResult result = await _mediator.Send(command);
+
+               
+                if (result.IsSuccessStatus && result.StatusCode == 2000)
                 {
                     TempData["SuccessMessage"] = "Task updated successfully.";
                     return RedirectToAction(nameof(List));
                 }
-                ModelState.AddModelError("", "Failed to update task.");
+
+                // Validation failed from handler
+                if (result.StatusCode == 1000 && !result.IsSuccessStatus)
+                {
+                    ModelState.AddModelError("", result.Message);
+                }
+                else
+                {
+                    
+                    ModelState.AddModelError("", "Failed to update task. " + result.Message);
+                }
             }
-            ViewBag.Users = await _userManager.Users.Select(u => new { u.Id, u.UserName }).ToListAsync();
+
+           
+            ViewBag.Users = await _userManager.Users
+                .Select(u => new { u.Id, u.UserName })
+                .ToListAsync();
+
             return View(task);
         }
+
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(Core.Entities.Tasks task)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var userId = _userManager.GetUserId(User);
+        //        var existingTaskQuery = new GetTaskByIdQuery { TaskId = task.Id };
+        //        var existingTask = await _mediator.Send(existingTaskQuery);
+        //        if (existingTask == null)
+        //        {
+        //            return NotFound();
+        //        }
+        //        if (existingTask.UserId != userId && existingTask.UserId != null)
+        //        {
+        //            return Forbid();
+        //        }
+        //        if (string.IsNullOrEmpty(task.UserId))
+        //        {
+        //            task.UserId = null;
+        //        }
+        //        var command = new UpdateTaskCommand { Task = task };
+        //        var result = await _mediator.Send(command);
+        //        if (result > 0)
+        //        {
+        //            TempData["SuccessMessage"] = "Task updated successfully.";
+        //            return RedirectToAction(nameof(List));
+        //        }
+        //        ModelState.AddModelError("", "Failed to update task.");
+        //    }
+        //    ViewBag.Users = await _userManager.Users.Select(u => new { u.Id, u.UserName }).ToListAsync();
+        //    return View(task);
+        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -247,31 +308,32 @@ namespace CSM.Controllers
                 {
                     task.UserId = null;
                 }
+
                 var command = new CreateTaskCommand { Task = task };
-                var result = await _mediator.Send(command);
-                if (result > 0)
+                ResponseResult result = await _mediator.Send(command);
+
+                if (result.IsSuccessStatus && result.StatusCode == 2000)
                 {
                     TempData["SuccessMessage"] = "Task created successfully.";
                     return RedirectToAction(nameof(List));
                 }
-                ModelState.AddModelError("", "Failed to create task.");
+                else if (result.StatusCode == 1000 && !result.IsSuccessStatus)
+                {
+                    ModelState.AddModelError("", result.Message);
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Failed to create task.");
+                }
             }
+
             ViewBag.Users = await _userManager.Users.Select(u => new { u.Id, u.UserName }).ToListAsync();
             return View(task);
         }
 
+
         #endregion
 
-        public async Task<IActionResult> Details(int id)
-        {
-            var query = new GetTaskByIdQuery { TaskId = id };
-            var task = await _mediator.Send(query);
-            if (task == null)
-            {
-                return NotFound();
-            }
-            return View(task);
-        }
 
         
     }

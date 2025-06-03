@@ -11,5 +11,6 @@ namespace CSM.Core.Common
         public string Message { get; set; }
         public int StatusCode { get; set; }
         public bool IsSuccessStatus { get; set; }
+        public object Data { get; set; }
     }
 }
