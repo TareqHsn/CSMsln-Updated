@@ -1,8 +1,13 @@
-﻿using MediatR;
-using CSM.Core.Interfaces.ITasks;
+﻿using CSM.Core.Interfaces.ITasks;
 using CSM.Core.UseCases.Queries.TaskQueries;
+using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace CSM.Core.UseCases.Queries.Handlers.TaskQueriesHandlers
+namespace CSM.Application.UseCases.Queries.Handlers.TaskQueriesHandlers
 {
     public class GetTaskCountHandler : IRequestHandler<GetTaskCountQuery, int>
     {

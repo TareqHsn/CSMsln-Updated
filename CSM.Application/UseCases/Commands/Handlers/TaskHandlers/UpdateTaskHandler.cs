@@ -1,18 +1,20 @@
 ﻿using CSM.Core.Common;
 using CSM.Core.Entities;
 using CSM.Core.Interfaces;
-using CSM.Core.UseCases.Commands.TaskCommands;
 using CSM.Core.UseCases.Commands.TasksCommands;
 using FluentValidation;
 using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace CSM.Core.UseCases.Commands.Handlers.TaskHandlers
+namespace CSM.Application.UseCases.Commands.Handlers.TaskHandlers
 {
-    
-
-    public class CreateTaskCommandValidator : AbstractValidator<CreateTaskCommand>
+    public class UpdateTaskCommandValidator : AbstractValidator<UpdateTaskCommand>
     {
-        public CreateTaskCommandValidator()
+        public UpdateTaskCommandValidator()
         {
             RuleFor(x => x.Task)
                 .NotNull()
@@ -25,48 +27,51 @@ namespace CSM.Core.UseCases.Commands.Handlers.TaskHandlers
                 .WithMessage("Task title cannot exceed 100 characters.");
         }
     }
-
-    public class CreateTaskHandler : IRequestHandler<CreateTaskCommand, ResponseResult>
+    public class UpdateTaskHandler : IRequestHandler<UpdateTaskCommand, ResponseResult>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateTaskHandler(IUnitOfWork unitOfWork)
+        public UpdateTaskHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ResponseResult> Handle(CreateTaskCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseResult> Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
         {
             ResponseResult rr = new ResponseResult();
 
             try
             {
-                var validator = new CreateTaskCommandValidator();
+                var validator = new UpdateTaskCommandValidator();
                 var validationResult = validator.Validate(request);
 
                 if (!validationResult.IsValid)
                 {
-                    rr.Message = "Error: " + string.Join("\n", validationResult.Errors.Select(e => e.ErrorMessage));
+                    rr.Message = "Validation Error: " + string.Join("\n", validationResult.Errors.Select(e => e.ErrorMessage));
                     rr.StatusCode = 1000;
                     rr.IsSuccessStatus = false;
                     return rr;
                 }
 
+                //Start Transaction
                 await _unitOfWork.BeginTransactionAsync();
 
-                var taskId = await _unitOfWork.TaskCommandRepository.SaveTask(request.Task);
-                if (taskId == 0)
+                var task = request.Task;
+
+                var result = await _unitOfWork.TaskCommandRepository.UpdateTaskById(task);
+                if (result == 0)
                 {
-                    throw new Exception("Failed to create task.");
+                    throw new Exception("Failed to update task.");
                 }
 
+                // Log
                 var auditLog = new AuditLog
                 {
-                    Action = "TaskCreated",
-                    UserId = request.Task.UserId,
+                    Action = "TaskUpdated",
+                    UserId = task.UserId,
                     Timestamp = DateTime.UtcNow,
                     EntityName = "Task",
-                    EntityId = request.Task.Id
+                    EntityId = task.Id
                 };
 
                 var auditResult = await _unitOfWork.AuditLogRepository.LogAuditAsync(auditLog);
@@ -74,13 +79,13 @@ namespace CSM.Core.UseCases.Commands.Handlers.TaskHandlers
                 {
                     throw new Exception("Failed to log audit entry.");
                 }
-
+                //comit transaction
                 await _unitOfWork.CommitTransactionAsync();
 
-                rr.Message = "Task created successfully.";
+                rr.Message = "Task updated successfully.";
                 rr.StatusCode = 2000;
                 rr.IsSuccessStatus = true;
-                rr.Data = taskId;
+                rr.Data = task.Id;
                 return rr;
             }
             catch (Exception ex)
@@ -94,5 +99,4 @@ namespace CSM.Core.UseCases.Commands.Handlers.TaskHandlers
             }
         }
     }
-
 }

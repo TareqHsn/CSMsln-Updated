@@ -1,10 +1,14 @@
-﻿using MediatR;
-using CSM.Core.Interfaces.ITasks;
-using CSM.Core.Entities;
-using CSM.Core.UseCases.Commands.TasksCommands;
+﻿using CSM.Core.Entities;
 using CSM.Core.Interfaces;
+using CSM.Core.UseCases.Commands.TasksCommands;
+using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace CSM.Core.UseCases.Commands.Handlers
+namespace CSM.Application.UseCases.Commands.Handlers.TaskHandlers
 {
     public class UpdateTaskStatusHandler : IRequestHandler<UpdateTaskStatusCommand, int>
     {
@@ -28,7 +32,7 @@ namespace CSM.Core.UseCases.Commands.Handlers
                     throw new Exception("Failed to update task status.");
                 }
 
-               
+
 
                 await _unitOfWork.CommitTransactionAsync();
                 return result;

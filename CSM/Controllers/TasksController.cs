@@ -1,5 +1,6 @@
 ﻿using CSM.Core.Common;
 using CSM.Core.Models.Task_VM;
+using CSM.Core.UseCases.Commands.TaskCommands;
 using CSM.Core.UseCases.Commands.TasksCommands;
 using CSM.Core.UseCases.Queries.TaskQueries;
 using MediatR;
@@ -237,39 +238,6 @@ namespace CSM.Controllers
         }
 
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(Core.Entities.Tasks task)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var userId = _userManager.GetUserId(User);
-        //        var existingTaskQuery = new GetTaskByIdQuery { TaskId = task.Id };
-        //        var existingTask = await _mediator.Send(existingTaskQuery);
-        //        if (existingTask == null)
-        //        {
-        //            return NotFound();
-        //        }
-        //        if (existingTask.UserId != userId && existingTask.UserId != null)
-        //        {
-        //            return Forbid();
-        //        }
-        //        if (string.IsNullOrEmpty(task.UserId))
-        //        {
-        //            task.UserId = null;
-        //        }
-        //        var command = new UpdateTaskCommand { Task = task };
-        //        var result = await _mediator.Send(command);
-        //        if (result > 0)
-        //        {
-        //            TempData["SuccessMessage"] = "Task updated successfully.";
-        //            return RedirectToAction(nameof(List));
-        //        }
-        //        ModelState.AddModelError("", "Failed to update task.");
-        //    }
-        //    ViewBag.Users = await _userManager.Users.Select(u => new { u.Id, u.UserName }).ToListAsync();
-        //    return View(task);
-        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]

@@ -1,5 +1,6 @@
 ﻿using CSM.Core.Entities;
 using CSM.Core.Interfaces.ITasks;
+using CSM.Core.UseCases.Commands.TaskCommands;
 using CSM.Core.UseCases.Commands.TasksCommands;
 
 namespace CSM.Application.Services.TaskServices

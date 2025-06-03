@@ -1,7 +1,8 @@
 using CSM.Application.Services.TaskServices;
+using CSM.Application.UseCases.Queries.Handlers.TaskQueriesHandlers;
 using CSM.Core.Interfaces.ITasks;
+using CSM.Core.UseCases.Commands.TaskCommands;
 using CSM.Core.UseCases.Commands.TasksCommands;
-using CSM.Core.UseCases.Queries.TaskQueries;
 using CSM.Infrastructure.Data;
 using FluentValidation;
 using MediatR;
@@ -43,9 +44,7 @@ namespace CSM
             builder.Services.AddScoped<ITaskQueryUseCase,   TaskQueryService>();
 
             // Register MediatR with the Core assembly where handlers reside
-            builder.Services.AddMediatR(typeof(GetTaskListQuery).Assembly);
-            //builder.Services.AddMediatR(typeof(CreateTaskCommand).Assembly);
-
+            builder.Services.AddMediatR(typeof(GetTaskListHandler).Assembly);
             // Register UnitOfWork
             builder.Services.AddScoped<Core.Interfaces.IUnitOfWork, UnitOfWork>();
 
@@ -53,6 +52,7 @@ namespace CSM
             builder.Services.AddScoped<Core.Interfaces.IAuditLogRepository, Infrastructure.Data.AuditLogRepository>();
 
             builder.Services.AddValidatorsFromAssembly(typeof(CreateTaskCommand).Assembly);
+            builder.Services.AddValidatorsFromAssembly(typeof(Core.UseCases.Queries.TaskQueries.GetTaskListQuery).Assembly);
            
             #endregion
 

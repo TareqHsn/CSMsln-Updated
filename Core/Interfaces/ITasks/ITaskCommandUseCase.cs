@@ -1,4 +1,5 @@
-﻿using CSM.Core.UseCases.Commands.TasksCommands;
+﻿using CSM.Core.UseCases.Commands.TaskCommands;
+using CSM.Core.UseCases.Commands.TasksCommands;
 
 namespace CSM.Core.Interfaces.ITasks
 {

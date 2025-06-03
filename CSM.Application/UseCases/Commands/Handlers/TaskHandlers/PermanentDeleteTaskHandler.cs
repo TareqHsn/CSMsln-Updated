@@ -1,10 +1,13 @@
-﻿using MediatR;
-using CSM.Core.Interfaces;
+﻿using CSM.Core.Interfaces.ITasks;
 using CSM.Core.UseCases.Commands.TasksCommands;
-using CSM.Core.Interfaces.ITasks;
-using CSM.Core.Entities;
+using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace CSM.Core.UseCases.Commands.Handlers.TaskHandlers
+namespace CSM.Application.UseCases.Commands.Handlers.TaskHandlers
 {
     public class PermanentDeleteTaskHandler : IRequestHandler<PermanentDeleteTaskCommand, int>
     {

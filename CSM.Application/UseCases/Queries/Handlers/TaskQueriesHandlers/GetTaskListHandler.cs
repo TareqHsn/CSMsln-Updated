@@ -1,10 +1,9 @@
-﻿
-using CSM.Core.Entities;
+﻿using CSM.Core.Entities;
 using CSM.Core.Interfaces.ITasks;
 using CSM.Core.UseCases.Queries.TaskQueries;
 using MediatR;
 
-namespace CSM.Core.UseCases.Queries.Handlers.TaskQueriesHandlers
+namespace CSM.Application.UseCases.Queries.Handlers.TaskQueriesHandlers
 {
     public class GetTaskListHandler : IRequestHandler<GetTaskListQuery, (IEnumerable<Tasks> Tasks, int TotalCount)>
     {
