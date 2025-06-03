@@ -5,7 +5,7 @@ This is a task management application built to demonstrate my coding skills and 
 
 Technologies Used:
 Backend: .NET Core (MVC) Version 8
-Database: Microsoft SQL Server (MSSQL)
+Database: Microsoft SQL Server (MSSQL-2022)
 
 Setup Instructions:
 
