@@ -2,6 +2,7 @@
 
 namespace CSM.Core.Interfaces.ITasks
 {
+    //Write
     public interface ITaskCommandRepository
     {
         Task<int> SaveTask(Tasks task);

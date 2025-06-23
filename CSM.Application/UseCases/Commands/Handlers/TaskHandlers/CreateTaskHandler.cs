@@ -2,14 +2,8 @@
 using CSM.Core.Entities;
 using CSM.Core.Interfaces;
 using CSM.Core.UseCases.Commands.TaskCommands;
-using CSM.Core.UseCases.Commands.TasksCommands;
 using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CSM.Application.UseCases.Commands.Handlers.TaskHandlers
 {

@@ -2,14 +2,12 @@
 using CSM.Core.Entities;
 using CSM.Core.Interfaces;
 using CSM.Core.UseCases.Commands.TaskCommands;
-using CSM.Core.UseCases.Commands.TasksCommands;
 using FluentValidation;
 using MediatR;
 
 namespace CSM.Core.UseCases.Commands.Handlers.TaskHandlers
 {
-    
-
+   
     public class CreateTaskCommandValidator : AbstractValidator<CreateTaskCommand>
     {
         public CreateTaskCommandValidator()
