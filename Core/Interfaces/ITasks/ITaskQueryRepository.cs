@@ -2,6 +2,7 @@
 
 namespace CSM.Core.Interfaces.ITasks
 {
+    //read
     public interface ITaskQueryRepository
     {
         Task<Tasks> GetTaskById(int taskId);
